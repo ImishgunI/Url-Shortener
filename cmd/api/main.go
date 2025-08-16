@@ -1,7 +1,16 @@
 package main
 
-import "fmt"
+import (
+	"shortener/src/config"
+
+	"github.com/gin-gonic/gin"
+)
 
 func main() {
-	fmt.Println("Hello World")
+	cfg := config.Create()
+	r := gin.Default()
+	err := r.Run(cfg.Port)
+	if err != nil {
+		panic("Cannot run server on port " + cfg.Port)
+	}
 }
