@@ -13,8 +13,8 @@ type DataBase struct {
 }
 
 type Repository interface {
-	Save(original_url string, db *DataBase) (int, error)
-	Get(id int, db *DataBase) (string, error)
+	Save(original_url string) (int, error)
+	Get(id int) string
 }
 
 func DbConnect(cfg config.DBConfig) (*DataBase, error) {
@@ -24,4 +24,22 @@ func DbConnect(cfg config.DBConfig) (*DataBase, error) {
 		return nil, err
 	}
 	return &DataBase{db: conn}, nil
+}
+
+func (d *DataBase) Save(original_url string) (int, error) {
+	_, err := d.db.Exec(context.Background(), "INSERT INTO urls (original_url) VALUES ($1)", original_url)
+	if err != nil {
+		return 0, err
+	}
+	var id int
+	row := d.db.QueryRow(context.Background(), "SELECT id FROM urls WHERE original_urls=$1", original_url)
+	row.Scan(&id)
+	return id, nil
+}
+
+func (d *DataBase) Get(id int) string {
+	var url string
+	row := d.db.QueryRow(context.Background(), "SELECT original_url FROM urls WHERE id=$1", id)
+	row.Scan(url)
+	return url
 }
