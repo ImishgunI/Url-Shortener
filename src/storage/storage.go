@@ -17,6 +17,10 @@ type Repository interface {
 	Get(id int) string
 }
 
+type Closer interface {
+	Close()
+}
+
 func DbConnect(cfg config.DBConfig) (*DataBase, error) {
 	connString := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=%s", cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.DBName, cfg.SSLMode)
 	conn, err := pgxpool.New(context.Background(), connString)
@@ -42,4 +46,8 @@ func (d *DataBase) Get(id int) string {
 	row := d.db.QueryRow(context.Background(), "SELECT original_url FROM urls WHERE id=$1", id)
 	row.Scan(url)
 	return url
+}
+
+func (d *DataBase) Close() {
+	d.db.Close()
 }
