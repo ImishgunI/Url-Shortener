@@ -2,6 +2,7 @@ package url
 
 import (
 	"log"
+	"log/slog"
 	"shortener/src/storage"
 	"shortener/src/utils"
 	"time"
@@ -32,7 +33,7 @@ func (h *Handler) PostShortUrl(c *gin.Context) {
 	}
 
 	short_url := utils.EncodeBase62(id)
-	log.Println("Url was created succesfully")
+	slog.Info("Url was created succesfully")
 	c.JSON(201, gin.H{
 		"id":           id,
 		"original_url": u.Url,
