@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"log/slog"
 	"shortener/src/config"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -29,7 +30,7 @@ func DbConnect(cfg config.DBConfig) (*DataBase, error) {
 		log.Printf("%v", err)
 		return nil, err
 	}
-	log.Println("Succesful connection to DataBase")
+	slog.Info("Succesful connection to DataBase")
 	return &DataBase{db: conn}, nil
 }
 
