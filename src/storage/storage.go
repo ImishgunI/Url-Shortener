@@ -16,7 +16,9 @@ type DataBase struct {
 
 type Repository interface {
 	Save(original_url string) (int, error)
-	Get(id int) string
+	Get(id int) (string, error)
+	Update(original_url string, id int) error
+	Delete(id int) error
 }
 
 type Closer interface {
@@ -43,11 +45,32 @@ func (d *DataBase) Save(original_url string) (int, error) {
 	return id, nil
 }
 
-func (d *DataBase) Get(id int) string {
+func (d *DataBase) Get(id int) (string, error) {
 	var url string
-	row := d.db.QueryRow(context.Background(), "SELECT original_url FROM public.urls WHERE id=$1", id)
-	row.Scan(url)
-	return url
+	err := d.db.QueryRow(context.Background(), "SELECT original_url FROM public.urls WHERE id=$1", id).Scan(&url)
+	if err != nil {
+		log.Printf("%v", err)
+		return "", err
+	}
+	return url, nil
+}
+
+func (d *DataBase) Update(original_url string, id int) error {
+	_, err := d.db.Query(context.Background(), "UPDATE urls SET original_url = $1 WHERE id = $2", original_url, id)
+	if err != nil {
+		log.Printf("%v", err)
+		return err
+	}
+	return nil
+}
+
+func (d *DataBase) Delete(id int) error {
+	_, err := d.db.Query(context.Background(), "DELETE FROM urls WHERE id=$1", id)
+	if err != nil {
+		log.Printf("%v", err)
+		return err
+	}
+	return nil
 }
 
 func (d *DataBase) Close() {
