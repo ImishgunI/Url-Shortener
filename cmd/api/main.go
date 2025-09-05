@@ -18,6 +18,9 @@ func main() {
 	h := url.New(db)
 	r := gin.Default()
 	r.POST("/shorten", h.PostShortUrl)
+	r.GET("/shorten/:code", h.GetOrigUrl)
+	r.PUT("/shorten/:code", h.PutShortUrl)
+	r.DELETE("/shorten/:code", h.DeleteShortUrl)
 	err = r.Run(cfg.Port)
 	if err != nil {
 		panic("Cannot run server on port " + cfg.Port)
