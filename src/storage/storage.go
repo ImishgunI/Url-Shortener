@@ -56,7 +56,7 @@ func (d *DataBase) Get(id int) (string, error) {
 }
 
 func (d *DataBase) Update(original_url string, id int) error {
-	_, err := d.db.Query(context.Background(), "UPDATE urls SET original_url = $1 WHERE id = $2", original_url, id)
+	_, err := d.db.Exec(context.Background(), "UPDATE urls SET original_url = $1 WHERE id = $2", original_url, id)
 	if err != nil {
 		log.Printf("%v", err)
 		return err
@@ -65,7 +65,7 @@ func (d *DataBase) Update(original_url string, id int) error {
 }
 
 func (d *DataBase) Delete(id int) error {
-	_, err := d.db.Query(context.Background(), "DELETE FROM urls WHERE id=$1", id)
+	_, err := d.db.Exec(context.Background(), "DELETE FROM urls WHERE id=$1", id)
 	if err != nil {
 		log.Printf("%v", err)
 		return err
